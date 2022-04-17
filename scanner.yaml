@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: scanner
 spec:
-  schedule: '*/2 * * * *'
+  schedule: '*/5 * * * *'
   concurrencyPolicy: Forbid
   jobTemplate:
     metadata:
@@ -28,7 +28,7 @@ spec:
             imagePullPolicy: IfNotPresent
             name: scanner
             args:
-            - 192.168.178.10
+            - 127.0.0.1
             volumeMounts:
             - name: portscanvol
               mountPath: /app/data
