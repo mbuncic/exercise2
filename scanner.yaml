@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scanner
+spec:
+  schedule: '*/2 * * * *'
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    metadata:
+      name: scanner
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: portscanvol
+            hostPath:
+              path: /tmp/portscandata
+              type: DirectoryOrCreate
+          initContainers:
+          - name: chowndir
+            image: busybox
+            command: ["sh", "-c", "chown -R 9999:9999 /data"]
+            volumeMounts:
+            - name: portscanvol
+              mountPath: /data
+          containers:
+          - image: markobuncic/portscan:dev
+            imagePullPolicy: IfNotPresent
+            name: scanner
+            args:
+            - 192.168.178.10
+            volumeMounts:
+            - name: portscanvol
+              mountPath: /app/data
+          restartPolicy: Never
